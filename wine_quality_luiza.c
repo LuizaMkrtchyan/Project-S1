@@ -47,7 +47,7 @@ void readCSV(const char *filename, double matrix_X[MAX_ROWS][MAX_COLS_X], double
             col++;
         }
 
-        // The last column goes to matrix_Y
+        // The last column ->  matrix_Y
         matrix_Y[*rows] = atof(token);
 
         (*rows)++;
@@ -66,6 +66,7 @@ void transposeMatrix(double inputMatrix[MAX_ROWS][MAX_COLS_X], double outputMatr
         }
     }
 }
+// function to transpose Y vector to Y matrix(column)
 void transposeRowToColumn(double vector[MAX_ROWS], double new[MAX_ROWS][1])
 {
     for (int i = 0; i < MAX_ROWS; i++)
@@ -204,94 +205,60 @@ int main()
     // Read the CSV file and store data into matrices
     readCSV(filename, matrix_X, matrix_Y, &rows);
 
-    // Print the data in matrix_X and matrix_Y
-    // printf("Rows: %d\n", rows);
-
-    // printf("Matrix X:\n");
-    // for (int i = 0; i < 10; i++) {
-    //     for (int j = 0; j < MAX_COLS_X; j++) {
-    //         printf("%f ", matrix_X[i][j]);
-    //     }
-    //     printf("\n");
-    // }
-
-    // printf("Matrix Y:\n");
-    // for (int i = 0; i < 10; i++) {
-    //     printf("%f\n", matrix_Y[i]);
-    // }
+    //Hashvum enq X Transposed-y
     double transposed_matrix_X[MAX_COLS_X][MAX_ROWS];
     transposeMatrix(matrix_X, transposed_matrix_X);
 
-    // printf("Transposed Matrix X:\n");
-    // for (int i = 0; i < 2; i++) {
-    //     for (int j = 0; j < MAX_ROWS; j++) {
-    //         printf("%f ", transposed_matrix_X[i][j]);
-    //     }
-    //     printf("\n----------------------------------------------------------------------------------------------\n");
-    // }
-
+    //BAzmapatkum enq Transposed X-y X-i het
     double XT_X[MAX_COLS_X][MAX_COLS_X];
     multiplyMatrices_XT_X(transposed_matrix_X, matrix_X, XT_X, MAX_COLS_X, MAX_ROWS, MAX_ROWS, MAX_COLS_X);
 
+    //Inverse enq anum et stacac artadryaly(XT*X)
     double inversed_XT_X[MAX_COLS_X][MAX_COLS_X];
     inverseMatrix(XT_X, inversed_XT_X, MAX_COLS_X);
 
-    // for (int i = 0; i < MAX_COLS_X; i++){
-    //     for (int j = 0; j < MAX_COLS_X; j++)
-    //     {
-    //        printf("%lf ",inversed_XT_X[i][j]);
-    //     }
-    //     printf("\n");
-    // }
-
+    //dardznum enq Y-y column
     double Y[MAX_ROWS][1];
     transposeRowToColumn(matrix_Y, Y);
-    // for (int i = 0; i < 20; i++)
-    // {
-    //     printf("%lf\n", Y[i][0]);
-    // }
+    //U bazmapatkum enq XT-i het
     double XT_Y[MAX_COLS_X][MAX_COLS_Y];
     multiplyMatrices_XT_Y(transposed_matrix_X, Y, XT_Y, MAX_COLS_X, MAX_ROWS, MAX_ROWS, MAX_COLS_Y);
-
+    // inversed(XT* X)*(Y*XT)
     double a[MAX_COLS_X][MAX_COLS_Y];
     multiplyMatrices(inversed_XT_X, XT_Y, a, MAX_COLS_X, MAX_COLS_X, MAX_COLS_X, MAX_COLS_Y);
 
-    // for (int i = 0; i < MAX_COLS_X; i++)
-    // {
-    //         printf("%lf\n",a[i][0]);
-    // }
+    //Nermucum a user-y chimicat-nery
+    double x[11];
+    printf("Fixed acidity: ");
+    scanf("%lf", &x[0]);
+    printf("Volatile acidity: ");
+    scanf("%lf", &x[1]);
+    printf("Citric acid: ");
+    scanf("%lf", &x[2]);
+    printf("Residual sugar: ");
+    scanf("%lf", &x[3]);
+    printf("Chlorides: ");
+    scanf("%lf", &x[4]);
+    printf("Free sulfur dioxide: ");
+    scanf("%lf", &x[5]);
+    printf("Total sulfur dioxide: ");
+    scanf("%lf", &x[6]);
+    printf("Desity: ");
+    scanf("%lf", &x[7]);
+    printf("pH: ");
+    scanf("%lf", &x[8]);
+    printf("Sulphates: ");
+    scanf("%lf", &x[9]);
+    printf("Alcohol: ");
+    scanf("%lf", &x[10]);
 
-     double x[11];
-     printf("Fixed acidity: ");
-     scanf("%lf", &x[0]);
-     printf("Volatile acidity: ");
-     scanf("%lf", &x[1]);
-     printf("Citric acid: ");
-     scanf("%lf", &x[2]);
-     printf("Residual sugar: ");
-     scanf("%lf", &x[3]);
-     printf("Chlorides: ");
-     scanf("%lf", &x[4]);
-     printf("Free sulfur dioxide: ");
-     scanf("%lf", &x[5]);
-     printf("Total sulfur dioxide: ");
-     scanf("%lf", &x[6]);
-     printf("Desity: ");
-     scanf("%lf", &x[7]);
-     printf("pH: ");
-     scanf("%lf", &x[8]);
-     printf("Sulphates: ");
-     scanf("%lf", &x[9]);
-     printf("Alcohol: ");
-     scanf("%lf", &x[10]);
-
+    // Haytararum enq quality-n
     double quality = a[0][0];
-    //printf("Quality: %lf\n",quality);
 
-    for (int i = 0; i < MAX_COLS_X-1; i++)
+    //quality = a0 + a1*x1 + a2*x2 + a3*x3 +...
+    for (int i = 0; i < MAX_COLS_X - 1; i++)
     {
-        quality+=(a[i+1][0]*x[i]);
-        //printf("%lf * %lf = %lf\n",a[i+1][0],x[i],quality);
+        quality += (a[i + 1][0] * x[i]);
     }
 
     printf("\nQuality: %lf", quality);
